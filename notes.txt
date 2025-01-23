@@ -46,5 +46,7 @@ VBoxManage modifyvm "cloud_infrastructure" --audio-driver none
 
 Login using a RDE software
 
+After uninstall -> VBoxManage storageattach "cloud_infrastructure" --storagectl "IDE Controller" --port 0 --device 0 --type dvddrive --medium none
+
 VBoxManage controlvm "cloud_infrastructure" acpipowerbutton
 

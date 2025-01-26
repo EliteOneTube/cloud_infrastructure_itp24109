@@ -166,10 +166,110 @@ echo '/dev/vg_data/lv_data /mnt/lvm ext4 defaults 0 0' | sudo tee -a /etc/fstab
 
 ---
 
-## Section 3: Setting Up OpenVPN
+## Section 3 - Setting Up OpenVPN
 
-### 1. Install OpenVPN and Easy-RSA
+To set up OpenVPN and Easy-RSA, follow these steps:
+
+### 1. **Update the package list and install OpenVPN and Easy-RSA:**
 ```bash
 sudo apt update
 sudo apt install openvpn easy-rsa
+```
+
+### 2. **Set up the Easy-RSA directory:**
+```bash
+make-cadir ~/easy-rsa
+cd ~/easy-rsa
+```
+
+### 3. **Initialize the Public Key Infrastructure (PKI):**
+```bash
+./easyrsa init-pki
+```
+
+### 4. **Build the Certificate Authority (CA):**
+```bash
+./easyrsa build-ca
+```
+
+### 5. **Generate a certificate request for the server:**
+```bash
+./easyrsa gen-req server nopass
+```
+
+### 6. **Sign the server certificate request with the CA:**
+```bash
+./easyrsa sign-req server server
+```
+
+### 7. **Generate Diffie-Hellman parameters:**
+```bash
+./easyrsa gen-dh
+```
+
+### 8. **Generate a static key for TLS authentication:**
+```bash
+openvpn --genkey secret ta.key
+```
+
+### 9. **Copy the necessary files to the OpenVPN directory:**
+```bash
+sudo cp pki/ca.crt pki/issued/server.crt pki/private/server.key pki/dh.pem ta.key /etc/openvpn/
+sudo cp /usr/share/doc/openvpn/examples/sample-config-files/server.conf /etc/openvpn/
+```
+
+### 10. **Edit the OpenVPN server configuration file (`/etc/openvpn/server.conf`):**
+    - Add the following lines:
+        ```
+        ca ca.crt
+        cert server.crt
+        key server.key
+        dh dh.pem
+        ```
+    - Enable TLS-auth by uncommenting and updating this line:
+        ```
+        tls-auth ta.key 0
+        ```
+    - Change the encryption cipher (optional but recommended for newer setups):
+        ```
+        cipher AES-256-CBC
+        ```
+    - Push DNS options (optional):
+        ```
+        push "redirect-gateway def1 bypass-dhcp"
+        push "dhcp-option DNS 8.8.8.8"
+        push "dhcp-option DNS 8.8.4.4"
+        ```
+
+### 11. **Start and enable the OpenVPN service:**
+```bash
+sudo systemctl start openvpn@server
+sudo systemctl enable openvpn@server
+```
+
+### 12. **Enable IP forwarding:**
+```bash
+sudo nano /etc/sysctl.conf
+```
+- Add or uncomment the following line:
+    ```
+    net.ipv4.ip_forward = 1
+    ```
+- Apply the changes:
+    ```bash
+    sudo sysctl -p
+    ```
+
+### 13. **Set up IP tables for NAT and forwarding:**
+```bash
+sudo iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o enp0s3 -j MASQUERADE
+sudo iptables -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
+sudo iptables -A FORWARD -s 10.8.0.0/24 -j ACCEPT
+```
+
+### 14. **Install and configure iptables-persistent to save the rules:**
+```bash
+sudo apt install iptables-persistent
+sudo netfilter-persistent save
+sudo netfilter-persistent reload
 ```

@@ -273,3 +273,40 @@ sudo apt install iptables-persistent
 sudo netfilter-persistent save
 sudo netfilter-persistent reload
 ```
+
+### 15. **Generate a certificate and key for the client:**
+```bash
+./easyrsa gen-req client1 nopass
+./easyrsa sign-req client client1
+```
+
+### 16. **Create the client configuration file:**
+```bash
+cp /usr/share/doc/openvpn/examples/sample-config-files/client.conf ~/client1.ovpn
+```
+
+
+### 17. **Edit the client configuration file (`~/client1.ovpn`):**
+    - Specify the server's public IP address or domain name:
+        ```
+        remote YOUR_SERVER_IP 1194
+        ```
+    - Ensure the file includes these lines for security and encryption:
+        ```
+        ca ca.crt
+        cert client1.crt
+        key client1.key
+        tls-auth ta.key 1
+        ```
+
+### 18. **Copy the required files to the client machine:** 
+    - `ca.crt`
+    - `client1.crt`
+    - `client1.key`
+    - `ta.key`
+    - `client1.ovpn`
+  
+### 19. **Connect to the OpenVPN server:**
+```bash
+sudo openvpn --config client1.ovpn
+```

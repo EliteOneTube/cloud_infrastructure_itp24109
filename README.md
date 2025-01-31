@@ -280,6 +280,8 @@ sudo netfilter-persistent reload
 ./easyrsa sign-req client client1
 ```
 
+### IMPORTANT: You need to port-forward UDP port 1194 on your router to the server's local IP address.
+
 ### 16. **Create the client configuration file:**
 ```bash
 cp /usr/share/doc/openvpn/examples/sample-config-files/client.conf ~/client1.ovpn

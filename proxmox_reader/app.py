@@ -1,19 +1,23 @@
 import time
 import logging
-from proxmoxer import ProxmoxAPI
 from dotenv import load_dotenv
 import os
+import requests
 
 # Load environment variables
 load_dotenv()
 
 # Configuration from .env file
 PROXMOX_HOST = os.getenv("PROXMOX_HOST")
-TOKEN_NAME = os.getenv("TOKEN_NAME")
+TOKEN_ID = os.getenv("TOKEN_ID")
 TOKEN_SECRET = os.getenv("TOKEN_SECRET")
 NODE_NAME = os.getenv("NODE_NAME")
 VM_ID = os.getenv("VM_ID")
 LOG_FILE_PATH = os.getenv("LOG_FILE_PATH")
+
+headers = {
+    'Authorization': 'PVEAPItoken=root@pam!%s=%s' % (TOKEN_ID, TOKEN_SECRET)
+}
 
 # Setup logging
 logging.basicConfig(filename=LOG_FILE_PATH, level=logging.INFO, 
@@ -21,20 +25,17 @@ logging.basicConfig(filename=LOG_FILE_PATH, level=logging.INFO,
 
 def dump_vm_configuration():
     try:
-        # Connect to Proxmox API
-        proxmox = ProxmoxAPI(
-            PROXMOX_HOST,
-            token_name=TOKEN_NAME,
-            token_secret=TOKEN_SECRET,
-            verify_ssl=False  # Disable SSL verification if using self-signed certs
-        )
-        
         # Get VM configuration
-        vm_config = proxmox.nodes(NODE_NAME).qemu(VM_ID).config.get()
-        
-        # Log VM configuration
-        logging.info("Dumping VM Configuration for VM ID %s on Node %s", VM_ID, NODE_NAME)
-        logging.info(vm_config)
+        response = requests.get(
+            f"https://{PROXMOX_HOST}/api2/json/nodes/", 
+            headers=headers,
+            verify=False
+        )
+        response.raise_for_status()
+        vm_config = response.json()['data']
+
+        # Dump VM configuration to log file
+        logging.info("VM configuration: %s", str(vm_config))
 
     except Exception as e:
         logging.error("Error dumping VM configuration: %s", str(e))

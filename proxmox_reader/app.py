@@ -30,7 +30,8 @@ def dump_vm_configuration():
         # Get VM configuration
         response = requests.get(
             f"http://{PROXMOX_HOST}/api2/json/nodes/", 
-            headers=headers
+            headers=headers,
+            verify=False
         )
         response.raise_for_status()
         vm_config = response.json()['data']

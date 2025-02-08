@@ -312,3 +312,11 @@ cp /usr/share/doc/openvpn/examples/sample-config-files/client.conf ~/client1.ovp
 ```bash
 sudo openvpn --config client1.ovpn
 ```
+
+### 20. **Set up the Python virtual environment and run the application:**
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate
+    pip install -r requirements.txt
+    python3 app.py &
+    ```

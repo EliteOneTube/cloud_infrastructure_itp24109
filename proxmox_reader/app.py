@@ -27,7 +27,7 @@ def dump_vm_configuration():
     try:
         # Get VM configuration
         response = requests.get(
-            f"https://{PROXMOX_HOST}/api2/json/nodes/", 
+            f"http://{PROXMOX_HOST}/api2/json/nodes/", 
             headers=headers,
             verify=False
         )

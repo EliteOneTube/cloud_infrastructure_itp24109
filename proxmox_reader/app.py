@@ -11,12 +11,14 @@ load_dotenv()
 PROXMOX_HOST = os.getenv("PROXMOX_HOST")
 TOKEN_ID = os.getenv("TOKEN_ID")
 TOKEN_SECRET = os.getenv("TOKEN_SECRET")
+USER = os.getenv("USER")
+REALM = os.getenv("REALM")
 NODE_NAME = os.getenv("NODE_NAME")
 VM_ID = os.getenv("VM_ID")
 LOG_FILE_PATH = os.getenv("LOG_FILE_PATH")
 
 headers = {
-    'Authorization': 'PVEAPItoken=itp24109@HUA!%s=%s' % (TOKEN_ID, TOKEN_SECRET)
+    'Authorization': 'PVEAPItoken=%s@%s!%s=%s' % (USER, REALM, TOKEN_ID, TOKEN_SECRET)
 }
 
 # Setup logging
@@ -27,9 +29,8 @@ def dump_vm_configuration():
     try:
         # Get VM configuration
         response = requests.get(
-            f"http://{PROXMOX_HOST}/api2/json/nodes/", 
-            headers=headers,
-            verify=False
+            f"https://{PROXMOX_HOST}/api2/json/nodes/", 
+            headers=headers
         )
         response.raise_for_status()
         vm_config = response.json()['data']

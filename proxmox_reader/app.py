@@ -16,7 +16,7 @@ VM_ID = os.getenv("VM_ID")
 LOG_FILE_PATH = os.getenv("LOG_FILE_PATH")
 
 headers = {
-    'Authorization': 'PVEAPItoken=root@pam!%s=%s' % (TOKEN_ID, TOKEN_SECRET)
+    'Authorization': 'PVEAPItoken=itp24109@HUA!%s=%s' % (TOKEN_ID, TOKEN_SECRET)
 }
 
 # Setup logging

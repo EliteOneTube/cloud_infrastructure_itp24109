@@ -28,12 +28,12 @@ logging.basicConfig(filename=LOG_FILE_PATH, level=logging.INFO,
 def dump_vm_configuration():
     try:
         # Get VM configuration
-        print(headers)
         response = requests.get(
             f"http://{PROXMOX_HOST}/api2/json/nodes/", 
             headers=headers,
             verify=False
         )
+        print(response)
         response.raise_for_status()
         vm_config = response.json()['data']
 

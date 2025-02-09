@@ -33,7 +33,6 @@ def dump_vm_configuration():
             headers=headers,
             verify=False
         )
-        print(response)
         response.raise_for_status()
         vm_config = response.json()['data']
 

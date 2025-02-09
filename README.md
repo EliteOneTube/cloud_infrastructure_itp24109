@@ -318,5 +318,5 @@ sudo openvpn --config client1.ovpn
     python3 -m venv venv
     source venv/bin/activate
     pip install -r requirements.txt
-    python3 app.py &
+    nohup python3 app.py &
     ```

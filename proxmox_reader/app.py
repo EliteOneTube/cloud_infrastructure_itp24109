@@ -29,7 +29,7 @@ def dump_vm_configuration():
     try:
         # Get VM configuration
         response = requests.get(
-            f"http://{PROXMOX_HOST}/api2/json/nodes/", 
+            f"https://{PROXMOX_HOST}/api2/json/nodes/{NODE_NAME}/qemu/{VM_ID}/config", 
             headers=headers,
             verify=False
         )
